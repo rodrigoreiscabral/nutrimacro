@@ -206,30 +206,6 @@ As etapas incluem:
 4. Instalação dos binários de navegadores necessários ao Playwright.
 5. Execução dos cinco testes E2E com `npm run test:e2e`.
 
-## Verificação da Formatação
-
-Depois de salvar o arquivo, confira as primeiras 25 linhas no terminal:
-
-```bash
-head -n 25 README.md
-```
-
-Para visualizar o arquivo completo no terminal, você também pode executar:
-
-```bash
-cat README.md
-```
-
-## Atualização do Repositório Remoto
-
-Depois de revisar o arquivo, execute os comandos abaixo para registrar e enviar a alteração:
-
-```bash
-git add README.md
-git commit -m "docs: reformatar estrutura e secoes do readme"
-git push origin main
-```
-
 ## Registros de Decisoes de Arquitetura (ADRs)
 
 Decisoes tecnicas documentadas no diretorio `docs/adr/`:
