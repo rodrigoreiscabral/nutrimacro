@@ -1,0 +1,7 @@
+export const CALORIES_PER_GRAM_PROTEIN = 4;
+export const CALORIES_PER_GRAM_CARB = 4;
+export const CALORIES_PER_GRAM_FAT = 9;
+
+export const MINIMUM_CALORIC_INTAKE = 1200;
+export const CALORIC_DEFICIT_TARGET = 500;
+export const CALORIC_SURPLUS_TARGET = 500;
