@@ -1,36 +1,45 @@
-name: CI/CD Pipeline
+name: CI NutriMacro
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 jobs:
-  test-matrix:
-    name: Testes e Cobertura
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [22.x]
-    runs-on: ${{ matrix.os }}
+  test-and-build:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do Repositorio
+      - name: Checkout do repositorio
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js ${{ matrix.node-version }}
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: 'npm'
 
-      - name: Instalar Dependencias
+      - name: Instalar dependencias
         run: npm ci
 
-      - name: Executar Testes de Unidade e Cobertura
+      - name: Validar tipos e compilar aplicacao
+        run: npm run build
+
+      - name: Executar testes unitarios com cobertura
         run: npm run test:coverage
 
-      - name: Compilar Aplicacao
-        run: npm run build
+      - name: Instalar navegadores do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Executar testes E2E com Playwright
+        run: npm run test:e2e
+
+      - name: Fazer upload do relatorio do Playwright caso ocorra falha
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
