@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBMR, calculateTDEE } from '../../src/services/calculations';
+import { calculateBMR, calculateCalorieTarget, calculateTDEE } from '../../src/services/calculations';
 
 describe('Servico de Calculos Nutricionais', () => {
   it('1. Deve calcular BMR masculino corretamente usando formula Mifflin-St Jeor', () => {
@@ -56,5 +56,25 @@ describe('Servico de Calculos Nutricionais', () => {
 
   it('13. Deve lancar erro se TDEE for invocado com BMR invalido', () => {
     expect(() => calculateTDEE(0, 'moderate')).toThrowError();
+  });
+
+  it('14. Deve manter calorias iguais ao TDEE para meta de manutencao', () => {
+    expect(calculateCalorieTarget(2500, 'maintain')).toBe(2500);
+  });
+
+  it('15. Deve subtrair 500 kcal para meta de perda de peso', () => {
+    expect(calculateCalorieTarget(2500, 'lose_weight')).toBe(2000);
+  });
+
+  it('16. Deve respeitar o piso minimo seguro de 1200 kcal na perda de peso', () => {
+    expect(calculateCalorieTarget(1400, 'lose_weight')).toBe(1200);
+  });
+
+  it('17. Deve somar 500 kcal para meta de ganho de peso', () => {
+    expect(calculateCalorieTarget(2200, 'gain_weight')).toBe(2700);
+  });
+
+  it('18. Deve lancar erro ao tentar calcular meta para TDEE zerado ou negativo', () => {
+    expect(() => calculateCalorieTarget(-50, 'maintain')).toThrowError();
   });
 });
