@@ -12,3 +12,10 @@ export interface UserProfile {
   goal: Goal;
   formula: Formula;
 }
+
+export interface MacroTargets {
+  calories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+}

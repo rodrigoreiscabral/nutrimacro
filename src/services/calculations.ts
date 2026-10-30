@@ -1,4 +1,4 @@
-import { ActivityLevel, Formula, Gender, Goal } from '../types';
+import { ActivityLevel, Formula, Gender, Goal, MacroTargets } from '../types';
 
 export function calculateBMR(
   gender: Gender,
@@ -53,4 +53,25 @@ export function calculateCalorieTarget(tdee: number, goal: Goal): number {
 
   const calculated = tdee + calorieDeltas[goal];
   return Math.max(1200, calculated);
+}
+
+export function calculateMacroTargets(targetCalories: number, goal: Goal): MacroTargets {
+  if (targetCalories <= 0) {
+    throw new Error('Calorias devem ser maiores que zero.');
+  }
+
+  const distribution: Record<Goal, { protein: number; carbs: number; fat: number }> = {
+    lose_weight: { protein: 0.4, carbs: 0.3, fat: 0.3 },
+    maintain: { protein: 0.3, carbs: 0.45, fat: 0.25 },
+    gain_weight: { protein: 0.25, carbs: 0.55, fat: 0.2 }
+  };
+
+  const currentDist = distribution[goal];
+
+  return {
+    calories: targetCalories,
+    proteinGrams: Math.round((targetCalories * currentDist.protein) / 4),
+    carbsGrams: Math.round((targetCalories * currentDist.carbs) / 4),
+    fatGrams: Math.round((targetCalories * currentDist.fat) / 9)
+  };
 }
