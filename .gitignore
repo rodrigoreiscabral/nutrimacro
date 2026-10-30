@@ -4,3 +4,10 @@ coverage
 playwright-report
 test-results
 .env
+
+# Relatorios de cobertura e traces locais
+coverage/
+test-results/
+playwright-report/
+blob-report/
+.nyc_output/
