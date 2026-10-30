@@ -11,7 +11,8 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist coverage playwright-report test-results"
   },
   "dependencies": {
     "react": "^18.3.1",
