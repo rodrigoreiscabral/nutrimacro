@@ -1,4 +1,4 @@
-import { ActivityLevel, Formula, Gender } from '../types';
+import { ActivityLevel, Formula, Gender, Goal } from '../types';
 
 export function calculateBMR(
   gender: Gender,
@@ -38,4 +38,19 @@ export function calculateTDEE(bmr: number, activityLevel: ActivityLevel): number
   };
 
   return Math.round(bmr * multipliers[activityLevel]);
+}
+
+export function calculateCalorieTarget(tdee: number, goal: Goal): number {
+  if (tdee <= 0) {
+    throw new Error('TDEE deve ser maior que zero.');
+  }
+
+  const calorieDeltas: Record<Goal, number> = {
+    lose_weight: -500,
+    maintain: 0,
+    gain_weight: 500
+  };
+
+  const calculated = tdee + calorieDeltas[goal];
+  return Math.max(1200, calculated);
 }
