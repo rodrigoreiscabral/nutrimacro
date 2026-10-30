@@ -75,3 +75,10 @@ export function calculateMacroTargets(targetCalories: number, goal: Goal): Macro
     fatGrams: Math.round((targetCalories * currentDist.fat) / 9)
   };
 }
+
+export function calculateFoodCalories(proteinGrams: number, carbsGrams: number, fatGrams: number): number {
+  if (proteinGrams < 0 || carbsGrams < 0 || fatGrams < 0) {
+    throw new Error('Macronutrientes nao podem ser negativos.');
+  }
+  return Math.round(proteinGrams * 4 + carbsGrams * 4 + fatGrams * 9);
+}
