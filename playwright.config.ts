@@ -6,16 +6,18 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'list',
+  reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:5173',
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'npm run dev -- --host 127.0.0.1 --port 5173',
+    command: process.env.CI
+      ? 'npm run preview -- --host 127.0.0.1 --port 5173'
+      : 'npm run dev -- --host 127.0.0.1 --port 5173',
     url: 'http://127.0.0.1:5173',
     reuseExistingServer: !process.env.CI,
-    timeout: 30000,
+    timeout: 60000,
   },
   projects: [
     {
