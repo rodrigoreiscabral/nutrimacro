@@ -1,4 +1,4 @@
-import { ActivityLevel, Formula, Gender, Goal, MacroTargets } from '../types';
+import { ActivityLevel, DailyTotals, FoodItem, Formula, Gender, Goal, MacroTargets } from '../types';
 
 export function calculateBMR(
   gender: Gender,
@@ -81,4 +81,16 @@ export function calculateFoodCalories(proteinGrams: number, carbsGrams: number, 
     throw new Error('Macronutrientes nao podem ser negativos.');
   }
   return Math.round(proteinGrams * 4 + carbsGrams * 4 + fatGrams * 9);
+}
+
+export function sumDailyTotals(foods: FoodItem[]): DailyTotals {
+  return foods.reduce(
+    (acc, item) => ({
+      calories: acc.calories + item.calories,
+      proteinGrams: acc.proteinGrams + item.proteinGrams,
+      carbsGrams: acc.carbsGrams + item.carbsGrams,
+      fatGrams: acc.fatGrams + item.fatGrams
+    }),
+    { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 }
+  );
 }

@@ -19,3 +19,19 @@ export interface MacroTargets {
   carbsGrams: number;
   fatGrams: number;
 }
+
+export interface FoodItem {
+  id: string;
+  name: string;
+  calories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+}
+
+export interface DailyTotals {
+  calories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+}
