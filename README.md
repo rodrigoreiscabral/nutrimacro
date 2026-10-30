@@ -1,6 +1,8 @@
 # NutriMacro
 
 [![CI NutriMacro](https://github.com/rodrigoreiscabral/nutrimacro/actions/workflows/ci.yml/badge.svg)](https://github.com/rodrigoreiscabral/nutrimacro/actions/workflows/ci.yml)
+n**Acesse a aplicacao em producao:** [NutriMacro Web](https://nutrimacro.vercel.app/)
+
 
 Calculadora nutricional e gerenciador de ingestão de macronutrientes desenvolvida com React, TypeScript e Vite.
 
