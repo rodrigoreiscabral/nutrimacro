@@ -226,3 +226,12 @@ git add README.md
 git commit -m "docs: reformatar estrutura e secoes do readme"
 git push origin main
 ```
+
+## Registros de Decisoes de Arquitetura (ADRs)
+
+Decisoes tecnicas documentadas no diretorio `docs/adr/`:
+* `0001-escolha-do-vitest.md`: Justificativa da escolha do Vitest como executor unitario.
+* `0002-escolha-do-playwright.md`: Justificativa do Playwright para os fluxos E2E.
+* `0003-formula-bmr-mifflin-st-jeor.md`: Criterio para definicao da formula padrao de BMR.
+* `0004-esteira-ci-github-actions.md`: Regras de validacao aplicadas na pipeline de CI.
+* `0005-separacao-camada-de-servico.md`: Isolamento das regras de negocio em funcoes puras.
