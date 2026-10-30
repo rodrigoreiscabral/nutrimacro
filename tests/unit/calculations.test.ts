@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   calculateBMR,
   calculateCalorieTarget,
+  calculateFoodCalories,
   calculateMacroTargets,
   calculateTDEE
 } from '../../src/services/calculations';
@@ -106,5 +107,17 @@ describe('Servico de Calculos Nutricionais', () => {
 
   it('22. Deve lancar erro ao calcular macros para calorias invalidas', () => {
     expect(() => calculateMacroTargets(0, 'maintain')).toThrowError();
+  });
+
+  it('23. Deve calcular calorias de um alimento pela regra 4kcal/g proteina e carboidrato e 9kcal/g gordura', () => {
+    expect(calculateFoodCalories(20, 30, 10)).toBe(290);
+  });
+
+  it('24. Deve retornar 0 calorias se todos os macros forem zerados', () => {
+    expect(calculateFoodCalories(0, 0, 0)).toBe(0);
+  });
+
+  it('25. Deve lancar erro se algum macronutriente for negativo', () => {
+    expect(() => calculateFoodCalories(-1, 10, 5)).toThrowError();
   });
 });
