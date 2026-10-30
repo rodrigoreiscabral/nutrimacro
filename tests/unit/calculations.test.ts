@@ -4,10 +4,11 @@ import {
   calculateCalorieTarget,
   calculateFoodCalories,
   calculateMacroTargets,
+  calculateRemaining,
   calculateTDEE,
   sumDailyTotals
 } from '../../src/services/calculations';
-import { FoodItem } from '../../src/types';
+import { DailyTotals, FoodItem, MacroTargets } from '../../src/types';
 
 describe('Servico de Calculos Nutricionais', () => {
   it('1. Deve calcular BMR masculino corretamente usando formula Mifflin-St Jeor', () => {
@@ -143,5 +144,41 @@ describe('Servico de Calculos Nutricionais', () => {
     expect(totals.proteinGrams).toBe(19);
     expect(totals.carbsGrams).toBe(47);
     expect(totals.fatGrams).toBe(17);
+  });
+
+  it('28. Deve calcular saldo restante positivo quando consumo for inferior as metas', () => {
+    const targets: MacroTargets = { calories: 2000, proteinGrams: 150, carbsGrams: 200, fatGrams: 60 };
+    const totals: DailyTotals = { calories: 1200, proteinGrams: 90, carbsGrams: 110, fatGrams: 35 };
+    const remaining = calculateRemaining(targets, totals);
+    expect(remaining).toEqual({
+      calories: 800,
+      proteinGrams: 60,
+      carbsGrams: 90,
+      fatGrams: 25
+    });
+  });
+
+  it('29. Deve calcular saldo negativo quando o consumo ultrapassar as metas', () => {
+    const targets: MacroTargets = { calories: 1800, proteinGrams: 140, carbsGrams: 180, fatGrams: 50 };
+    const totals: DailyTotals = { calories: 2100, proteinGrams: 160, carbsGrams: 210, fatGrams: 65 };
+    const remaining = calculateRemaining(targets, totals);
+    expect(remaining).toEqual({
+      calories: -300,
+      proteinGrams: -20,
+      carbsGrams: -30,
+      fatGrams: -15
+    });
+  });
+
+  it('30. Deve retornar saldo zerado quando consumo for exatamente igual as metas', () => {
+    const targets: MacroTargets = { calories: 2000, proteinGrams: 150, carbsGrams: 200, fatGrams: 60 };
+    const totals: DailyTotals = { calories: 2000, proteinGrams: 150, carbsGrams: 200, fatGrams: 60 };
+    const remaining = calculateRemaining(targets, totals);
+    expect(remaining).toEqual({
+      calories: 0,
+      proteinGrams: 0,
+      carbsGrams: 0,
+      fatGrams: 0
+    });
   });
 });
