@@ -1,6 +1,7 @@
 # NutriMacro
 
 [![CI NutriMacro](https://github.com/rodrigoreiscabral/nutrimacro/actions/workflows/ci.yml/badge.svg)](https://github.com/rodrigoreiscabral/nutrimacro/actions/workflows/ci.yml)
+
 **Acesse a aplicacao em producao:** [NutriMacro Web](https://nutrimacro.vercel.app/)
 
 
