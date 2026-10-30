@@ -4,8 +4,10 @@ import {
   calculateCalorieTarget,
   calculateFoodCalories,
   calculateMacroTargets,
-  calculateTDEE
+  calculateTDEE,
+  sumDailyTotals
 } from '../../src/services/calculations';
+import { FoodItem } from '../../src/types';
 
 describe('Servico de Calculos Nutricionais', () => {
   it('1. Deve calcular BMR masculino corretamente usando formula Mifflin-St Jeor', () => {
@@ -119,5 +121,27 @@ describe('Servico de Calculos Nutricionais', () => {
 
   it('25. Deve lancar erro se algum macronutriente for negativo', () => {
     expect(() => calculateFoodCalories(-1, 10, 5)).toThrowError();
+  });
+
+  it('26. Deve retornar totais zerados para uma lista vazia de alimentos', () => {
+    const totals = sumDailyTotals([]);
+    expect(totals).toEqual({
+      calories: 0,
+      proteinGrams: 0,
+      carbsGrams: 0,
+      fatGrams: 0
+    });
+  });
+
+  it('27. Deve somar corretamente calorias e macros de multiplos alimentos', () => {
+    const foods: FoodItem[] = [
+      { id: '1', name: 'Ovos mexidos', calories: 200, proteinGrams: 14, carbsGrams: 2, fatGrams: 15 },
+      { id: '2', name: 'Arroz integral', calories: 215, proteinGrams: 5, carbsGrams: 45, fatGrams: 2 }
+    ];
+    const totals = sumDailyTotals(foods);
+    expect(totals.calories).toBe(415);
+    expect(totals.proteinGrams).toBe(19);
+    expect(totals.carbsGrams).toBe(47);
+    expect(totals.fatGrams).toBe(17);
   });
 });
