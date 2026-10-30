@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBMR, calculateCalorieTarget, calculateTDEE } from '../../src/services/calculations';
+import {
+  calculateBMR,
+  calculateCalorieTarget,
+  calculateMacroTargets,
+  calculateTDEE
+} from '../../src/services/calculations';
 
 describe('Servico de Calculos Nutricionais', () => {
   it('1. Deve calcular BMR masculino corretamente usando formula Mifflin-St Jeor', () => {
@@ -76,5 +81,30 @@ describe('Servico de Calculos Nutricionais', () => {
 
   it('18. Deve lancar erro ao tentar calcular meta para TDEE zerado ou negativo', () => {
     expect(() => calculateCalorieTarget(-50, 'maintain')).toThrowError();
+  });
+
+  it('19. Deve calcular gramas de macronutrientes corretamente para perda de peso (40/30/30)', () => {
+    const macros = calculateMacroTargets(2000, 'lose_weight');
+    expect(macros.proteinGrams).toBe(200);
+    expect(macros.carbsGrams).toBe(150);
+    expect(macros.fatGrams).toBe(67);
+  });
+
+  it('20. Deve calcular gramas de macronutrientes corretamente para manutencao (30/45/25)', () => {
+    const macros = calculateMacroTargets(2000, 'maintain');
+    expect(macros.proteinGrams).toBe(150);
+    expect(macros.carbsGrams).toBe(225);
+    expect(macros.fatGrams).toBe(56);
+  });
+
+  it('21. Deve calcular gramas de macronutrientes corretamente para ganho de peso (25/55/20)', () => {
+    const macros = calculateMacroTargets(2000, 'gain_weight');
+    expect(macros.proteinGrams).toBe(125);
+    expect(macros.carbsGrams).toBe(275);
+    expect(macros.fatGrams).toBe(44);
+  });
+
+  it('22. Deve lancar erro ao calcular macros para calorias invalidas', () => {
+    expect(() => calculateMacroTargets(0, 'maintain')).toThrowError();
   });
 });
