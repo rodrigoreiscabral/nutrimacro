@@ -1,41 +1,36 @@
+import { ActivityLevel, Goal, MacroSplit, NutritionalSummary, Profile, FoodItem } from '../types';
 import {
-  ActivityLevel,
-  DailyTotals,
-  FoodItem,
-  Formula,
-  Gender,
-  Goal,
-  MacroTargets,
-  RemainingNutrients
-} from '../types';
+  CALORIES_PER_GRAM_CARB,
+  CALORIES_PER_GRAM_FAT,
+  CALORIES_PER_GRAM_PROTEIN,
+  CALORIC_DEFICIT_TARGET,
+  CALORIC_SURPLUS_TARGET,
+  MINIMUM_CALORIC_INTAKE,
+} from '../constants/nutrition';
 
-export function calculateBMR(
-  gender: Gender,
-  weightKg: number,
-  heightCm: number,
-  ageYears: number,
-  formula: Formula = 'mifflin'
-): number {
-  if (weightKg <= 0 || heightCm <= 0 || ageYears <= 0) {
-    throw new Error('Peso, altura e idade devem ser estritamente positivos.');
+export function calculateBMR(profile: Profile): number {
+  const { weight, height, age, gender, formula } = profile;
+
+  if (weight <= 0 || height <= 0 || age <= 0) {
+    throw new Error('Peso, altura e idade devem ser valores positivos maiores que zero.');
   }
 
-  if (formula === 'mifflin') {
+  if (formula === 'harris_benedict') {
     if (gender === 'male') {
-      return Math.round(10 * weightKg + 6.25 * heightCm - 5 * ageYears + 5);
+      return 88.362 + 13.397 * weight + 4.799 * height - 5.677 * age;
     }
-    return Math.round(10 * weightKg + 6.25 * heightCm - 5 * ageYears - 161);
+    return 447.593 + 9.247 * weight + 3.098 * height - 4.330 * age;
   }
 
   if (gender === 'male') {
-    return Math.round(88.362 + 13.397 * weightKg + 4.799 * heightCm - 5.677 * ageYears);
+    return 10 * weight + 6.25 * height - 5 * age + 5;
   }
-  return Math.round(447.593 + 9.247 * weightKg + 3.098 * heightCm - 4.33 * ageYears);
+  return 10 * weight + 6.25 * height - 5 * age - 161;
 }
 
 export function calculateTDEE(bmr: number, activityLevel: ActivityLevel): number {
   if (bmr <= 0) {
-    throw new Error('BMR deve ser maior que zero.');
+    throw new Error('A taxa metabolica basal deve ser maior que zero.');
   }
 
   const multipliers: Record<ActivityLevel, number> = {
@@ -43,72 +38,92 @@ export function calculateTDEE(bmr: number, activityLevel: ActivityLevel): number
     light: 1.375,
     moderate: 1.55,
     active: 1.725,
-    very_active: 1.9
+    very_active: 1.9,
   };
 
-  return Math.round(bmr * multipliers[activityLevel]);
+  return bmr * multipliers[activityLevel];
 }
 
-export function calculateCalorieTarget(tdee: number, goal: Goal): number {
+export function calculateDailyTarget(tdee: number, goal: Goal): number {
   if (tdee <= 0) {
-    throw new Error('TDEE deve ser maior que zero.');
+    throw new Error('O TDEE deve ser maior que zero.');
   }
 
-  const calorieDeltas: Record<Goal, number> = {
-    lose_weight: -500,
-    maintain: 0,
-    gain_weight: 500
-  };
+  if (goal === 'lose_weight') {
+    return Math.max(MINIMUM_CALORIC_INTAKE, tdee - CALORIC_DEFICIT_TARGET);
+  }
 
-  const calculated = tdee + calorieDeltas[goal];
-  return Math.max(1200, calculated);
+  if (goal === 'gain_weight') {
+    return tdee + CALORIC_SURPLUS_TARGET;
+  }
+
+  return tdee;
 }
 
-export function calculateMacroTargets(targetCalories: number, goal: Goal): MacroTargets {
+export function calculateMacroSplit(targetCalories: number, goal: Goal): MacroSplit {
   if (targetCalories <= 0) {
-    throw new Error('Calorias devem ser maiores que zero.');
+    throw new Error('A meta calorica deve ser maior que zero.');
   }
 
-  const distribution: Record<Goal, { protein: number; carbs: number; fat: number }> = {
-    lose_weight: { protein: 0.4, carbs: 0.3, fat: 0.3 },
-    maintain: { protein: 0.3, carbs: 0.45, fat: 0.25 },
-    gain_weight: { protein: 0.25, carbs: 0.55, fat: 0.2 }
-  };
+  let proteinRatio = 0.3;
+  let carbRatio = 0.45;
+  let fatRatio = 0.25;
 
-  const currentDist = distribution[goal];
+  if (goal === 'lose_weight') {
+    proteinRatio = 0.4;
+    carbRatio = 0.3;
+    fatRatio = 0.3;
+  } else if (goal === 'gain_weight') {
+    proteinRatio = 0.25;
+    carbRatio = 0.55;
+    fatRatio = 0.2;
+  }
 
   return {
-    calories: targetCalories,
-    proteinGrams: Math.round((targetCalories * currentDist.protein) / 4),
-    carbsGrams: Math.round((targetCalories * currentDist.carbs) / 4),
-    fatGrams: Math.round((targetCalories * currentDist.fat) / 9)
+    proteinGrams: Math.round((targetCalories * proteinRatio) / CALORIES_PER_GRAM_PROTEIN),
+    carbsGrams: Math.round((targetCalories * carbRatio) / CALORIES_PER_GRAM_CARB),
+    fatsGrams: Math.round((targetCalories * fatRatio) / CALORIES_PER_GRAM_FAT),
   };
 }
 
-export function calculateFoodCalories(proteinGrams: number, carbsGrams: number, fatGrams: number): number {
-  if (proteinGrams < 0 || carbsGrams < 0 || fatGrams < 0) {
-    throw new Error('Macronutrientes nao podem ser negativos.');
+export function calculateItemCalories(protein: number, carbs: number, fats: number): number {
+  if (protein < 0 || carbs < 0 || fats < 0) {
+    throw new Error('Macronutrientes nao podem ter valores negativos.');
   }
-  return Math.round(proteinGrams * 4 + carbsGrams * 4 + fatGrams * 9);
-}
 
-export function sumDailyTotals(foods: FoodItem[]): DailyTotals {
-  return foods.reduce(
-    (acc, item) => ({
-      calories: acc.calories + item.calories,
-      proteinGrams: acc.proteinGrams + item.proteinGrams,
-      carbsGrams: acc.carbsGrams + item.carbsGrams,
-      fatGrams: acc.fatGrams + item.fatGrams
-    }),
-    { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 }
+  return (
+    protein * CALORIES_PER_GRAM_PROTEIN +
+    carbs * CALORIES_PER_GRAM_CARB +
+    fats * CALORIES_PER_GRAM_FAT
   );
 }
 
-export function calculateRemaining(targets: MacroTargets, totals: DailyTotals): RemainingNutrients {
+export function aggregateNutrients(items: FoodItem[]): {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+} {
+  return items.reduce(
+    (acc, item) => ({
+      calories: acc.calories + item.calories,
+      protein: acc.protein + item.protein,
+      carbs: acc.carbs + item.carbs,
+      fats: acc.fats + item.fats,
+    }),
+    { calories: 0, protein: 0, carbs: 0, fats: 0 }
+  );
+}
+
+export function calculateRemainingNutrients(
+  targetCalories: number,
+  targetMacros: MacroSplit,
+  consumed: { calories: number; protein: number; carbs: number; fats: number }
+): NutritionalSummary {
   return {
-    calories: targets.calories - totals.calories,
-    proteinGrams: targets.proteinGrams - totals.proteinGrams,
-    carbsGrams: targets.carbsGrams - totals.carbsGrams,
-    fatGrams: targets.fatGrams - totals.fatGrams
+    remainingCalories: Math.round(targetCalories - consumed.calories),
+    remainingProtein: Math.round(targetMacros.proteinGrams - consumed.protein),
+    remainingCarbs: Math.round(targetMacros.carbsGrams - consumed.carbs),
+    remainingFats: Math.round(targetMacros.fatsGrams - consumed.fats),
   };
 }
