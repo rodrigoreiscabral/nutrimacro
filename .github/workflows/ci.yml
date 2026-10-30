@@ -10,9 +10,10 @@ jobs:
   test-matrix:
     name: Testes e Cobertura
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: [20.x]
+        node-version: [22.x]
     runs-on: ${{ matrix.os }}
 
     steps:
