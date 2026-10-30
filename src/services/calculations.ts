@@ -1,4 +1,13 @@
-import { ActivityLevel, DailyTotals, FoodItem, Formula, Gender, Goal, MacroTargets } from '../types';
+import {
+  ActivityLevel,
+  DailyTotals,
+  FoodItem,
+  Formula,
+  Gender,
+  Goal,
+  MacroTargets,
+  RemainingNutrients
+} from '../types';
 
 export function calculateBMR(
   gender: Gender,
@@ -93,4 +102,13 @@ export function sumDailyTotals(foods: FoodItem[]): DailyTotals {
     }),
     { calories: 0, proteinGrams: 0, carbsGrams: 0, fatGrams: 0 }
   );
+}
+
+export function calculateRemaining(targets: MacroTargets, totals: DailyTotals): RemainingNutrients {
+  return {
+    calories: targets.calories - totals.calories,
+    proteinGrams: targets.proteinGrams - totals.proteinGrams,
+    carbsGrams: targets.carbsGrams - totals.carbsGrams,
+    fatGrams: targets.fatGrams - totals.fatGrams
+  };
 }

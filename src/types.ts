@@ -35,3 +35,10 @@ export interface DailyTotals {
   carbsGrams: number;
   fatGrams: number;
 }
+
+export interface RemainingNutrients {
+  calories: number;
+  proteinGrams: number;
+  carbsGrams: number;
+  fatGrams: number;
+}
